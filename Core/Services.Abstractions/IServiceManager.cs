@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Abstractions
+namespace ServicesAbstractions
 {
     public interface IServiceManager
     {
         IProductService ProductService { get; }
+        IBasketService basketService { get; }
     }
 }
