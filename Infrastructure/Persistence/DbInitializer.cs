@@ -21,80 +21,61 @@ namespace Persistence
         }
         public async Task IntializeAsync()
         {
-
-            try
+            // Create Database if it doesnt exist && Apply to any pending Migrations
+            if (_context.Database.GetPendingMigrations().Any())
             {
+                await _context.Database.MigrateAsync();
+            }
+            // Data Seeding
 
-                // Create Database if it doesnt exist && Apply to any pending Migrations
-                if (_context.Database.GetPendingMigrations().Any())
+            // 1) Seeding ProductTypes from json
+
+            if (!_context.ProductTypes.Any())
+            {
+                // 1.Read Al Data from types json as string
+                var TypesData = await File.ReadAllTextAsync(@"..\Infrastructure\Persistence\Data\Seeding\types.json");
+                // 2.Transform string to C# Object "List<Product Types>"
+                var types = JsonSerializer.Deserialize<List<ProductType>>(TypesData);
+                // 3.Add List to DB
+                if (types is not null && types.Any())
                 {
-                    await _context.Database.MigrateAsync();
+                    await _context.ProductTypes.AddRangeAsync(types);
+                    await _context.SaveChangesAsync();
                 }
-                // Data Seeding
+            }
+            // ..\Infrastructure\Persistence\Data\Seeding\types.json
 
-                // 1) Seeding ProductTypes from json
+            // 2) Seeding ProductBrands from json
 
-                if (!_context.ProductTypes.Any())
+            if (!_context.ProductBrands.Any())
+            {
+                // 1.Read Al Data from types json as string
+                var BrandsData = await File.ReadAllTextAsync(@"..\Infrastructure\Persistence\Data\Seeding\brands.json");
+                // 2.Transform string to C# Object "List<Product Types>"
+                var brands = JsonSerializer.Deserialize<List<ProductBrand>>(BrandsData);
+                // 3.Add List to DB
+                if (brands is not null && brands.Any())
                 {
-                    // 1.Read Al Data from types json as string
-                    var TypesData = await File.ReadAllTextAsync(@"..\Infrastructure\Persistence\Data\Seeding\types.json");
-
-                    // 2.Transform string to C# Object "List<Product Types>"
-                    var types = JsonSerializer.Deserialize<List<ProductType>>(TypesData);
-
-                    // 3.Add List to DB
-                    if (types is not null && types.Any())
-                    {
-                        await _context.ProductTypes.AddRangeAsync(types);
-                        await _context.SaveChangesAsync();
-                    }
+                    await _context.ProductBrands.AddRangeAsync(brands);
+                    await _context.SaveChangesAsync();
                 }
-
-
-                // 2) Seeding ProductBrands from json
-
-                if (!_context.ProductBrands.Any())
-                {
-                    // 1.Read Al Data from types json as string
-                    var BrandsData = await File.ReadAllTextAsync(@"..\Infrastructure\Persistence\Data\Seeding\brands.json");
-
-                    // 2.Transform string to C# Object "List<Product Types>"
-                    var brands = JsonSerializer.Deserialize<List<ProductBrand>>(BrandsData);
-
-                    // 3.Add List to DB
-                    if (brands is not null && brands.Any())
-                    {
-                        await _context.ProductBrands.AddRangeAsync(brands);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-
-
-                // 3) Seeding Products from json
-                if (!_context.Products.Any())
-                {
-                    // 1.Read Al Data from products json as string
-                    var ProductsData = await File.ReadAllTextAsync(@"..\Infrastructure\Persistence\Data\Seeding\products.json");
-
-                    // 2.Transform string to C# Object "List<Product Types>"
-                    var products = JsonSerializer.Deserialize<List<Product>>(ProductsData);
-
-                    // 3.Add List to DB
-                    if (products is not null && products.Any())
-                    {
-                        await _context.Products.AddRangeAsync(products);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-
-
-
             }
 
-            catch (Exception ) {
-                throw;
+            // 3) Seeding Products from json
+
+            if (!_context.Products.Any())
+            {
+                // 1.Read Al Data from products json as string
+                var ProductsData = await File.ReadAllTextAsync(@"..\Infrastructure\Persistence\Data\Seeding\products.json");
+                // 2.Transform string to C# Object "List<Product Types>"
+                var products = JsonSerializer.Deserialize<List<Product>>(ProductsData);
+                // 3.Add List to DB
+                if (products is not null && products.Any())
+                {
+                    await _context.Products.AddRangeAsync(products);
+                    await _context.SaveChangesAsync();
+                }
             }
-
-
+        }
     }
-    } }
+}
