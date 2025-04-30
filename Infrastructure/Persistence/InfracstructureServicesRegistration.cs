@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Data;
 using Persistence.Data.Repositories;
+using Persistence.Identity;
 using Persistence.Repositories;
 using StackExchange.Redis;
 using System;
@@ -23,6 +24,15 @@ namespace Persistence
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
+
+
+            services.AddDbContext<StoreIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"));
+            });
+
+
+
             services.AddScoped<IDbInitializer, DbIntializer>(); // Allow DI 
             services.AddScoped<IBasketRepository, BasketRepository>();
             services.AddScoped<ICasheRepository, CasheRepository>();    

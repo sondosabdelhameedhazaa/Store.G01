@@ -1,6 +1,8 @@
 ﻿using Domain.Contracts;
 using Domain.Models;
 using Persistence.Data;
+using Persistence.Data.Repositories;
+
 //using Persistence.Data.Repositories;
 using Persistence.Repositories;
 using System;

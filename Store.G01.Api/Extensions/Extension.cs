@@ -4,6 +4,9 @@ using Persistence;
 using Services;
 using Domain.Contracts;
 using Store.G01.Api.Middlewares;
+using Domain.Models.Identity;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 
 
 
@@ -20,6 +23,7 @@ namespace Store.G01.Api.Extensions
 
 
             services.AddInfrastructureServices(configuration);
+            services.AddIdentityServices();
             services.AddApplicationServices();
 
 
@@ -37,6 +41,17 @@ namespace Store.G01.Api.Extensions
 
             return services;
         }
+
+
+        private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        {
+           
+            services.AddIdentity<AppUser , IdentityRole>()
+            .AddEntityFrameworkStores<StoreIdentityDbContext>();
+
+            return services;
+        }
+
 
         private static IServiceCollection AddSwaggerServices(this IServiceCollection services)
         {
@@ -110,6 +125,8 @@ namespace Store.G01.Api.Extensions
             using var scope = app.Services.CreateScope();
             var dbIntializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();// Allow CR Create Object from DbIntializer
             await dbIntializer.IntializeAsync();
+            await dbIntializer.IntializeIdentityAsync();
+
             #endregion
 
             return app;

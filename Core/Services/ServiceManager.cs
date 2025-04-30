@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
+using Domain.Models.Identity;
+using Microsoft.AspNetCore.Identity;
 using Services.Abstractions;
 using ServicesAbstractions;
 using System;
@@ -14,7 +16,8 @@ namespace Services
         IUnitOfWork unitOfWork,
         IMapper mapper,
         IBasketRepository basketRepository,
-        ICasheRepository casheRepository
+        ICasheRepository casheRepository,
+        UserManager<AppUser> userManager
         
         ) : IServiceManager
     {
@@ -22,5 +25,7 @@ namespace Services
         public IBasketService basketService { get; } = new BasketService(basketRepository, mapper);
 
         public ICasheService casheService { get; } = new CasheService(casheRepository);
+
+        public IAuthService AuthService { get; } = new AuthService(userManager);
     }
 }
